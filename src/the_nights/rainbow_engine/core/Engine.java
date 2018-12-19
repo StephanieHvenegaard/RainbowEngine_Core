@@ -26,6 +26,7 @@ import the_nights.rainbow_engine.core.graphics.SplashScreen;
 import the_nights.rainbow_engine.core.listner.KeyboardListner;
 import the_nights.rainbow_engine.core.listner.MouseEventListner;
 import the_nights.rainbow_engine.core.logging.RELogger;
+import the_nights.rainbow_engine.core.settings.EngineSettings;
 import the_nigths.rson.RSONObject;
 
 public class Engine extends JFrame implements Runnable {
@@ -51,35 +52,26 @@ public class Engine extends JFrame implements Runnable {
     //Int    
     private int fps = 0;
     private int tickCounter = 0; // works as FPS Counter.
-    private int desiredSpeed = 30;
+
     private int fx_Counter;
 
     // Components
     private Canvas canvas = new Canvas();
+    private EngineSettings engineSettings = new EngineSettings();
     private IScreenBuffer screenBuffer;
     private KeyboardListner keyboardListner = new KeyboardListner(this);
     private MouseEventListner mouseEventListner = new MouseEventListner(this);
     private Rectangle debugRec;
-    private RSONObject settings;
-
+   
     public Engine() {
         RELogger.writelog("Showing splashscreen", this);
         showSplashScreen();
-        RELogger.writelog("Loading settings", this);
-        try {
-            settings = RSONObject.parse(loadFile("enginesettings.rson"));
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IllegalArgumentException ex) {
-            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        RELogger.writelog("Loading settings", this); 
+        
         RELogger.writelog("Initializing Engine", this);
-        RELogger.writelog("Borderless : " + settings.get("decorated"), this);
-        RELogger.writelog("fullscreen : " + settings.get("fullscreen"), this);
-        RELogger.writelog("Resolution : " + settings.get("resolution"), this);
-        String[] sp = settings.get("resolution").toLowerCase().split("x");
-        int W = Integer.parseInt(sp[0]);
-        int H = Integer.parseInt(sp[1]);
+        RELogger.writelog("Borderless : " + engineSettings.borderless, this);
+        RELogger.writelog("fullscreen : " + engineSettings.fullscreen, this);
+        RELogger.writelog("Resolution : " + engineSettings.resolution.res, this);
 
         //debug rectangle.
         debugRec = new Rectangle(0, 0, 140, 50);
@@ -88,7 +80,7 @@ public class Engine extends JFrame implements Runnable {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         //Add our graphics compoent      
         this.add(canvas);
-        this.setUndecorated(Boolean.valueOf(settings.get("decorated")));
+        this.setUndecorated(engineSettings.borderless);
         //Make our frame visible.
         this.setVisible(true);
         //Create our object for buffer strategy.    
@@ -100,8 +92,8 @@ public class Engine extends JFrame implements Runnable {
         canvas.addFocusListener(keyboardListner);
         //get focus.
         canvas.requestFocus();
-        this.setScreenSize(W, H);
-        if (Boolean.valueOf(settings.get("fullscreen"))) {
+        this.setScreenSize(engineSettings.resolution.width,engineSettings.resolution.heigth);
+        if (engineSettings.fullscreen) {
             this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         }
     }
@@ -130,7 +122,7 @@ public class Engine extends JFrame implements Runnable {
         if (fx_Counter > 0) {
             fx_Counter++;
         }
-        if (fx_Counter > 2 * desiredSpeed) {
+        if (fx_Counter > 2 * engineSettings.desiredSpeed) {
             fx_Counter = 0;
         }
     }
@@ -162,7 +154,7 @@ public class Engine extends JFrame implements Runnable {
         if (game != null) {
             game.startGame(this);
             long lastTime = System.nanoTime(); //long 2^63
-            long averageTickTime = (long) NANOSEC_TO_SEC / desiredSpeed;
+            long averageTickTime = (long) NANOSEC_TO_SEC / engineSettings.desiredSpeed;
             double changeInSeconds = 0;
             while (true) {
                 long tick = System.nanoTime();
@@ -254,7 +246,7 @@ public class Engine extends JFrame implements Runnable {
     // Getters
     //--------------------------------------------------------------------------
     public int getDesiredSpeed() {
-        return desiredSpeed;
+        return engineSettings.desiredSpeed;
     }
 
     public int getScreenWidth() {
@@ -288,8 +280,6 @@ public class Engine extends JFrame implements Runnable {
     // Setters
     //--------------------------------------------------------------------------
     public void setScreenSize(int screenWidth, int screenHeight) {
-        //this.screenWidth = screenWidth;
-        //this.screenHeight = screenHeight;
         // first set the screen size to se if there is any borders.
         this.setBounds(0, 0, screenWidth, screenHeight);
         this.setVisible(true);
@@ -311,7 +301,7 @@ public class Engine extends JFrame implements Runnable {
     }
 
     public void setDesiredSpeed(int desiredSpeed) {
-        this.desiredSpeed = desiredSpeed;
+        this.engineSettings.desiredSpeed = desiredSpeed;
     }
 
 //    public void setScreenWidth(int screenWidth) {

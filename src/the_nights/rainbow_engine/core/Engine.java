@@ -5,6 +5,7 @@
  */
 package the_nights.rainbow_engine.core;
 
+import the_nights.rainbow_engine.core.interfaces.IGame;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -64,8 +65,7 @@ public class Engine extends JFrame implements Runnable {
     public Engine() {
         RELogger.writelog("Showing splashscreen", this);
         showSplashScreen();
-        RELogger.writelog("Loading settings", this); 
-        
+        RELogger.writelog("Loading settings", this);         
         RELogger.writelog("Initializing Engine", this);
         RELogger.writelog("Borderless : " + engineSettings.borderless, this);
         RELogger.writelog("fullscreen : " + engineSettings.fullscreen, this);
@@ -203,29 +203,6 @@ public class Engine extends JFrame implements Runnable {
         Thread engineT = new Thread(this);
         engineT.start();
     }
-
-    public static BufferedImage loadImage(String path) {
-        try {
-            BufferedImage loaded = ImageIO.read(loadFile(path));
-            BufferedImage formatted = new BufferedImage(loaded.getWidth(), loaded.getHeight(), BufferedImage.TYPE_INT_RGB);
-            formatted.getGraphics().drawImage(loaded, 0, 0, null);
-            return formatted;
-        } catch (IOException e) {
-            RELogger.writelog(e.getMessage(), "Engine");
-            return null;
-        }
-    }
-
-    public static File loadFile(String path) {
-        File loaded = null;
-        try {
-            loaded = new File(path);
-        } catch (Exception e) {
-            RELogger.writelog(e.getMessage(), "Engine");
-        }
-        return loaded;
-    }
-
     public void shutdownEngine() {
         dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }

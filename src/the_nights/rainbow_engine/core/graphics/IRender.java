@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package the_nights.rainbow_engine.core.graphics;
-import the_nights.rainbow_engine.core.ICoreObject;
+import the_nights.rainbow_engine.core.interfaces.ICoreObject;
 /**
  *
  * @author Stephanie

@@ -1,6 +1,6 @@
 
 import the_nights.rainbow_engine.core.Engine;
-import the_nights.rainbow_engine.core.IGame;
+import the_nights.rainbow_engine.core.interfaces.IGame;
 import the_nights.rainbow_engine.core.graphics.IScreenBuffer;
 
 /*

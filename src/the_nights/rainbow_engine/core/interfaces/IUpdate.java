@@ -3,12 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package the_nights.rainbow_engine.core;
+package the_nights.rainbow_engine.core.interfaces;
+
+import the_nights.rainbow_engine.core.Engine;
 
 /**
  *
  * @author Stephanie
  */
-public interface ICoreObject {
-    
+public interface IUpdate extends ICoreObject{
+      public void update(Engine engine);
 }

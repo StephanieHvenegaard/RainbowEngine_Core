@@ -13,7 +13,6 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,7 +26,6 @@ import the_nights.rainbow_engine.core.listner.KeyboardListner;
 import the_nights.rainbow_engine.core.listner.MouseEventListner;
 import the_nights.rainbow_engine.core.logging.RELogger;
 import the_nights.rainbow_engine.core.settings.EngineSettings;
-import the_nigths.rson.RSONObject;
 
 public class Engine extends JFrame implements Runnable {
 

@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import the_nights.rainbow_engine.core.graphics.CoreScreenbuffer;
-import the_nights.rainbow_engine.core.graphics.IScreenBuffer;
+import the_nights.rainbow_engine.core.interfaces.IScreenBuffer;
 import the_nights.rainbow_engine.core.graphics.Rectangle;
 import the_nights.rainbow_engine.core.graphics.SplashScreen;
 import the_nights.rainbow_engine.core.listner.KeyboardListner;
@@ -69,7 +69,7 @@ public class Engine extends JFrame implements Runnable {
         RELogger.writelog("Initializing Engine", this);
         RELogger.writelog("Borderless : " + engineSettings.borderless, this);
         RELogger.writelog("fullscreen : " + engineSettings.fullscreen, this);
-        RELogger.writelog("Resolution : " + engineSettings.resolution.res, this);
+        RELogger.writelog("Resolution : " + engineSettings.resolution.getName(), this);
 
         //debug rectangle.
         debugRec = new Rectangle(0, 0, 140, 50);

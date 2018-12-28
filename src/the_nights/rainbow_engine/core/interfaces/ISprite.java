@@ -9,7 +9,11 @@ package the_nights.rainbow_engine.core.interfaces;
  *
  * @author Stephanie
  */
-public abstract class GameObject implements IRender, IUpdate {
- 
-  
+public interface ISprite {
+
+    public int[] getPixels();
+
+    public int getWidth();
+
+    public int getHeight();
 }

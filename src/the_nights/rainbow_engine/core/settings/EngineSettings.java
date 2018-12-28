@@ -34,7 +34,7 @@ public class EngineSettings {
             savefile.put("desiredSpeed", "30");
             savefile.put("fullscreen", "false");
             savefile.put("borderless", "false");
-            savefile.put("resolution", ScreenRessolution.CGA.name());
+            savefile.put("resolution", ScreenRessolution.CGA.index +"");
             try {
                 savefile.save(path);
             } catch (IOException ex1) {
@@ -45,10 +45,11 @@ public class EngineSettings {
             RELogger.writelog("failed to read argument.", this);
             RELogger.writelog(ex.getMessage(), this);
         }
-        this.desiredSpeed = Integer.getInteger(savefile.get("desiredSpeed"));
+        
+        this.desiredSpeed = Integer.parseInt(savefile.get("desiredSpeed"));
         this.borderless = Boolean.parseBoolean(savefile.get("fullscreen"));
         this.borderless = Boolean.parseBoolean(savefile.get("borderless"));
-        this.resolution = ScreenRessolution.fromId(Integer.getInteger(savefile.get("resolution")));
+        this.resolution = ScreenRessolution.fromId(Integer.parseInt(savefile.get("resolution")));
     }
 
     public String get(String key) {

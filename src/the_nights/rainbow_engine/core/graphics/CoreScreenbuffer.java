@@ -5,6 +5,7 @@
  */
 package the_nights.rainbow_engine.core.graphics;
 
+import the_nights.rainbow_engine.core.interfaces.IScreenBuffer;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -12,6 +13,7 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import the_nights.rainbow_engine.core.interfaces.ISprite;
 
 public class CoreScreenbuffer implements IScreenBuffer {
 
@@ -35,42 +37,21 @@ public class CoreScreenbuffer implements IScreenBuffer {
         camera = new Rectangle(0, 0, width, height);
     }
 
-//    public void renderRainbow(Graphics graphics) {
-//        int spectrumSize = viewImage.getHeight() / 6;
-//        int row = 0;
-//        int colorIndex = 0;
-//        int pixel = EngineColors.Red;
-//        for (int indexH = 0; indexH < viewImage.getHeight(); indexH++) {
-//
-//            if (row == spectrumSize) {
-//                switch (colorIndex) {
-//                    case 0:
-//                        pixel = EngineColors.Orange;
-//                        break;
-//                    case 1:
-//                        pixel = EngineColors.Yellow;
-//                        break;
-//                    case 2:
-//                        pixel = EngineColors.Green;
-//                        break;
-//                    case 3:
-//                        pixel = EngineColors.Blue;
-//                        break;
-//                    case 4:
-//                        pixel = EngineColors.Violet;
-//                        break;
-//                }
-//                row = 0;
-//                colorIndex++;
-//            }
-//
-//            for (int indexW = 0; indexW < viewImage.getWidth(); indexW++) {
-//                viewPixels[indexH * viewImage.getWidth() + indexW] = pixel;
-//            }
-//            row++;
-//        }
-//        graphics.drawImage(viewImage, 0, 0, viewImage.getWidth(), viewImage.getHeight(), null);
-//    }
+    @Override
+    public void renderSprite(ISprite sprite, int xPosition, int yPosition, boolean renderBackground) {
+        renderSprite(sprite, xPosition, yPosition, 1, 1, renderBackground);
+    }
+
+    @Override
+    public void renderSprite(ISprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean renderBackground) {
+        sprite.getPixels();
+        if (renderBackground) {
+            renderBackgroundPixels( sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight(), xZoom, yZoom);
+        } else {
+            renderPixels( sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight(), xZoom, yZoom);
+        }
+    }
+    
     @Override
     public void renderImage(BufferedImage image, int xPosition, int yPosition, boolean renderBackground) {
         renderImage(image, xPosition, yPosition, 1, 1, renderBackground);
@@ -202,26 +183,20 @@ public class CoreScreenbuffer implements IScreenBuffer {
         //System.out.println("xpos : "+ xPosition + "ypos : "+ yPosition);
         BufferedImage screen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
         int[] screenPixels = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
-        int scanline = 5;
-        int scan = 0;
         for (int y = 0; y < viewImage.getHeight(); y++) {
             for (int x = 0; x < viewImage.getWidth(); x++) {
                 for (int yz = 0; yz < zoomFactor; yz++) {
-                    if ((scan % scanline) != 0) {
                         for (int xz = 0; xz < zoomFactor; xz++) {
                             int pixel = viewPixels[x + (y * viewImage.getWidth())];
                             int xi = ((x * zoomFactor) + xPosition + xz);
                             int yi = ((y * zoomFactor) + yPosition + yz);
                             screenPixels[xi + (yi * screenWidth)] = pixel;
                         }
-                    }
-                    scan++;
                 }
             }
         }
         graphics.drawImage(screen, 0, 0, screenWidth, screenHeight, null);
     }
-
     @Override
     public void renderBackgroundPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight, int xZoom, int yZoom) {
         for (int y = 0; y < renderHeight; y++) {
@@ -238,27 +213,17 @@ public class CoreScreenbuffer implements IScreenBuffer {
             }
         }
     }
-
     @Override
     public void setBackgroundPixel(int pixel, int x, int y) {
-        //if (pixel != ColorPallete.ALPHA_ARGB) {
         if (pixel != ColorPallete.ALPHA_RGB) {
             int pixelIndex = x + (y * backgroundImage.getWidth());
             if (pixelIndex < bgPixels.length) {
                 bgPixels[pixelIndex] = pixel;
             }
-        }
-        //}
+        }     
     }
-
     @Override
     public void setBackgroundSize(int width, int heigth) {
-//        if (heigth < camera.getHeight()) {
-//            heigth = camera.getHeight();
-//        }
-//        if (width < camera.getWidth()) {
-//            width = camera.getWidth();
-//        }
         backgroundImage = new BufferedImage(width, heigth, BufferedImage.TYPE_INT_ARGB);
         bgPixels = ((DataBufferInt) backgroundImage.getRaster().getDataBuffer()).getData();
     }
@@ -292,30 +257,16 @@ public class CoreScreenbuffer implements IScreenBuffer {
     public void clear(boolean renderbackground) {
         if (renderbackground) {
             renderImage(backgroundImage, 0, 0, false);
-
-//            for (int y = 0; y < backgroundImage.getHeight() && y< camera.getHeight(); y++) {
-//                for (int x = 0; x < backgroundImage.getWidth() && x< camera.getWidth(); x++) {
-//                    int bgpID = camera.getX() + (camera.getY() * camera.getWidth());
-//                    if (bgpID < bgPixels.length) {
-//                        int pixel = bgPixels[bgpID];
-//                        viewPixels[x + (y * viewImage.getWidth())] = pixel;
-//                    } else {
-//                        System.out.println("bgpID are out of range og bgImage");
-//                    }
-//                }
-//            }
         } else {
             for (int i = 0; i < viewPixels.length; i++) {
                 viewPixels[i] = 0;
             }
         }
     }
-
     @Override
     public BufferedImage getBufferImage() {
         return viewImage;
     }
-
     @Override
     public int calculateTextSize(Text text) {
         Font font = new Font(text.getFont(), Font.PLAIN, text.getSize());

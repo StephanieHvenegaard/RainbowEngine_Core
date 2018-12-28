@@ -6,7 +6,6 @@
 package the_nights.rainbow_engine.core.interfaces;
 
 import the_nights.rainbow_engine.core.Engine;
-import the_nights.rainbow_engine.core.graphics.IScreenBuffer;
 
 /**
  *

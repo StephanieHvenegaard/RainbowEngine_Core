@@ -3,10 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package the_nights.rainbow_engine.core.graphics;
+package the_nights.rainbow_engine.core.interfaces;
 
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import the_nights.rainbow_engine.core.graphics.Rectangle;
+import the_nights.rainbow_engine.core.graphics.Text;
 
 
 /**
@@ -19,9 +21,9 @@ public interface IScreenBuffer {
 
     public void renderImage(BufferedImage image, int xPosition, int yPosition, int xZoom, int yZoom, boolean background);
 
-   //public void renderSprite(Sprite sprite, int xPosition, int yPosition, boolean background);
+    public void renderSprite(ISprite sprite, int xPosition, int yPosition, boolean background);
 
-    //public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean background);
+    public void renderSprite(ISprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean background);
 
     public void renderRectangle(Rectangle rec, boolean background);
 

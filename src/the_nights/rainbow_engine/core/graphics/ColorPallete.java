@@ -17,12 +17,12 @@ public class ColorPallete {
     {
         return new ColorPallete();
     }
-    public int getColor(int id)
-    {
-        if(id == -1)
-            return ALPHA_RGB;
-        return 0;
-    }    
+//    public int getColor(int id)
+//    {
+//        if(id == -1)
+//            return ALPHA_RGB;
+//        return 0;
+//    }    
 }    
 //    public static final int COLOR_MODE_8=0;
 //    public static final int COLOR_MODE_16=1;

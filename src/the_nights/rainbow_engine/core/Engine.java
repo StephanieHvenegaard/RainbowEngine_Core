@@ -9,11 +9,10 @@ import the_nights.rainbow_engine.core.interfaces.IGame;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -63,14 +62,23 @@ public class Engine extends JFrame implements Runnable {
     private Rectangle debugRec;
    
     public Engine() {
+        
+        try {
+            Image img = ImageIO.read(getClass().getResourceAsStream("/icon.png"));
+            this.setIconImage(img);
+        } catch (IOException ex) {
+            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         RELogger.writelog("Showing splashscreen", this);
         showSplashScreen();
+        
         RELogger.writelog("Loading settings", this);         
         RELogger.writelog("Initializing Engine", this);
         RELogger.writelog("Borderless : " + engineSettings.borderless, this);
         RELogger.writelog("fullscreen : " + engineSettings.fullscreen, this);
         RELogger.writelog("Resolution : " + engineSettings.resolution.getName(), this);
-
+        
         //debug rectangle.
         debugRec = new Rectangle(0, 0, 140, 50);
         debugRec.generateGrafics(0);
@@ -269,6 +277,7 @@ public class Engine extends JFrame implements Runnable {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.screenBuffer = new CoreScreenbuffer(screenWidth, screenHeight);
+        
     }
 
     public void setScreenBuffer(CoreScreenbuffer screenBuffer) {
@@ -287,6 +296,7 @@ public class Engine extends JFrame implements Runnable {
 //    }
     public void setGame(IGame game) {
         RELogger.writelog("setting game : " + game.getName() + " " + game.getVersionNumber(), this);
+        this.setTitle("Rainbow Engine - "+game.getName() +" "+ game.getVersionNumber());
         this.game = game;
     }
 }

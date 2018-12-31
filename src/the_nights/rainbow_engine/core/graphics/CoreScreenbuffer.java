@@ -66,19 +66,6 @@ public class CoreScreenbuffer implements IScreenBuffer {
             renderPixels(imagePixels, xPosition, yPosition, image.getWidth(), image.getHeight(), xZoom, yZoom);
         }
     }
-//    @Override
-//    public void renderSprite(Sprite sprite, int xPosition, int yPosition, boolean renderBackground) {
-//        renderSprite(sprite, xPosition, yPosition, 1, 1, renderBackground);
-//    }
-//
-//    @Override
-//    public void renderSprite(Sprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean renderBackground) {
-//        if (renderBackground) {
-//            renderBackgroundPixels(sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight(), xZoom, yZoom);
-//        } else {
-//            renderPixels(sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight(), xZoom, yZoom);
-//        }
-//    }
 
     @Override
     public void renderRectangle(Rectangle rec, boolean renderBackground) {

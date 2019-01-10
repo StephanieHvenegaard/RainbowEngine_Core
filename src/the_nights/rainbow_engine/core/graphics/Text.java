@@ -28,10 +28,10 @@ public class Text {
         this.xPosition = xPosition;
         this.yPosition = yPosition;
     }
-    public Text(String text, int size, String Font, int xPosition, int yPosition) {
+    public Text(String text, String Font, int size, int xPosition, int yPosition) {
         this(text, size, Font, Color.WHITE, xPosition, yPosition);  
     }
-    public Text(String text, int size, int xPosition, int yPosition) {
+    public Text(String text,int size,  int xPosition, int yPosition) {
         this(text, size, "Consolas", Color.WHITE, xPosition, yPosition);
     }
 

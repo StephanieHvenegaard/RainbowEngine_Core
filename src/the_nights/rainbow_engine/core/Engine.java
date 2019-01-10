@@ -22,6 +22,7 @@ import the_nights.rainbow_engine.core.graphics.CoreScreenbuffer;
 import the_nights.rainbow_engine.core.interfaces.IScreenBuffer;
 import the_nights.rainbow_engine.core.graphics.Rectangle;
 import the_nights.rainbow_engine.core.graphics.SplashScreen;
+import the_nights.rainbow_engine.core.graphics.Text;
 import the_nights.rainbow_engine.core.listner.KeyboardListner;
 import the_nights.rainbow_engine.core.listner.MouseEventListner;
 import the_nights.rainbow_engine.core.logging.RELogger;
@@ -141,11 +142,11 @@ public class Engine extends JFrame implements Runnable {
                 super.paint(graphics);
                 game.render(screenBuffer);
                 if (_showDebugInfo) {
-                    screenBuffer.renderRectangle(debugRec, false);
-                    screenBuffer.renderString(String.format("fps  : %7d", fps), DEFAULT_FONT, 12, 5, 11, false);
-                    screenBuffer.renderString(String.format("upd  : %7d ns", updateTime), DEFAULT_FONT, 12, 5, 11 * 2, false);
-                    screenBuffer.renderString(String.format("rndr : %7d ns", renderTime), DEFAULT_FONT, 12, 5, 11 * 3, false);
-                    screenBuffer.renderString(String.format("gobj : %7d's", game.countGameObjects()), DEFAULT_FONT, 12, 5, 11 * 4, false);
+                    screenBuffer.renderRectangle(debugRec);
+                    screenBuffer.renderString(new Text(String.format("fps  : %7d", fps), DEFAULT_FONT, 12, 5, 11));
+                    screenBuffer.renderString(new Text(String.format("upd  : %7d ns", updateTime), DEFAULT_FONT, 12, 5, 11 * 2));
+                    screenBuffer.renderString(new Text(String.format("rndr : %7d ns", renderTime), DEFAULT_FONT, 12, 5, 11 * 3));
+                    screenBuffer.renderString(new Text(String.format("gobj : %7d's", game.countGameObjects()), DEFAULT_FONT, 12, 5, 11 * 4));
                 }
                 screenBuffer.DrawView(graphics, canvas.getWidth(), canvas.getHeight());
                 //Clean up;

@@ -5,6 +5,8 @@
  */
 package the_nights.rainbow_engine.core.graphics;
 
+import the_nights.rainbow_engine.core.graphics.pallates.C64Palette;
+
 
 /**
  *
@@ -26,7 +28,7 @@ public class Rectangle {
         this.pixels = new int[width * height];
         for (int iy = 0; iy < height; iy++) {
             for (int ix = 0; ix < width; ix++) {
-                pixels[ix + (iy * width)] = ColorPallete.ALPHA_RGB;
+                pixels[ix + (iy * width)] = C64Palette.ALPHA_RGB;
             }
         }
     }

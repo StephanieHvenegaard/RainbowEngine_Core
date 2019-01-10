@@ -9,59 +9,62 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import the_nights.rainbow_engine.core.graphics.Rectangle;
 import the_nights.rainbow_engine.core.graphics.Text;
-
-
+import the_nights.rainbow_engine.core.graphics.pallates.BasePalette;
 /**
  *
  * @author Stephanie
  */
 public interface IScreenBuffer {
 
-    public void renderImage(BufferedImage image, int xPosition, int yPosition, boolean background);
-
-    public void renderImage(BufferedImage image, int xPosition, int yPosition, int xZoom, int yZoom, boolean background);
-
-    public void renderSprite(ISprite sprite, int xPosition, int yPosition, boolean background);
-
-    public void renderSprite(ISprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean background);
-
-    public void renderRectangle(Rectangle rec, boolean background);
-
-    public void renderRectangle(Rectangle rec, int xZoom, int yZoom, boolean background);
-   
-    public void renderString(Text text, boolean renderBackground);
-   
-    public void renderString(String s, String fontName, int fontSize, int xPosition, int yPosition, boolean background);
-
-    public void renderBackgroundPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight, int xZoom, int yZoom);
-
-    public void setBackgroundPixel(int pixel, int x, int y);
-
-    public void setBackgroundSize(int width, int heigth);
+    public void renderImage(BufferedImage image, int xPosition, int yPosition);
+    
+    public void renderSprite(ISprite sprite, int xPosition, int yPosition);
+    
+    public void renderRectangle(Rectangle rec);
+    
+    public void renderString(Text text);
 
     public void renderPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight);
 
-    public void renderPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight, int xZoom, int yZoom);
-
     public void setPixel(int pixel, int x, int y);   
-    
-    public void setRenderAlpha(boolean renderAlpha);
-    
-    public boolean isRenderAlpha();
-
-    public void DrawView(Graphics graphics);
 
     public void DrawView(Graphics graphics, int screenWidth, int screenHeight);
 
-    public Rectangle getCamara();
-
-    public BufferedImage getView();
-
-    public int[] getViewPixels();
+    public void clear();  
     
-    public int calculateTextSize(Text text);
+    public BasePalette getPallete();
     
-    public BufferedImage getBufferImage();
+    public void setPallete(BasePalette pallete);
 
-    public void clear(boolean renderbackground);
+    //public void renderRectangle(Rectangle rec, int xZoom, int yZoom);
+   
+    //public void renderImage(BufferedImage image, int xPosition, int yPosition, int xZoom, int yZoom);
+
+    //public void renderSprite(ISprite sprite, int xPosition, int yPosition, int xZoom, int yZoom);
+    
+    //public void renderString(String s, String fontName, int fontSize, int xPosition, int yPosition);
+
+    //public void renderBackgroundPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight, int xZoom, int yZoom);
+
+    //public void setBackgroundPixel(int pixel, int x, int y);
+
+    //public void setBackgroundSize(int width, int heigth);
+
+    //public void renderPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight, int xZoom, int yZoom);
+
+    //public void setRenderAlpha(boolean renderAlpha);
+    
+    //public boolean isRenderAlpha();
+
+    //public void DrawView(Graphics graphics);
+    
+    //public Rectangle getCamara();
+
+    //public BufferedImage getView();
+
+    //public int[] getViewPixels();
+    
+    //public int calculateTextSize(Text text);
+    
+    //public BufferedImage getBufferImage();
 }

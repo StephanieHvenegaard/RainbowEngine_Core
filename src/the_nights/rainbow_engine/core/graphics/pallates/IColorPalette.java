@@ -3,17 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package the_nights.rainbow_engine.core.interfaces;
+package the_nights.rainbow_engine.core.graphics.pallates;
 
 /**
  *
  * @author Stephanie
  */
-public interface ISprite{
-
-    public int[] getPixels();
-
-    public int getWidth();
-
-    public int getHeight();
+public interface IColorPalette {
+    public int getPalleteSize();
+    public int getColor(int id);
 }

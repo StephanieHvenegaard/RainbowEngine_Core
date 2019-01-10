@@ -16,8 +16,6 @@ import the_nights.rainbow_engine.core.graphics.pallates.BasePalette;
  */
 public interface IScreenBuffer {
 
-    public void renderImage(BufferedImage image, int xPosition, int yPosition);
-    
     public void renderSprite(ISprite sprite, int xPosition, int yPosition);
     
     public void renderRectangle(Rectangle rec);

@@ -18,14 +18,14 @@ import the_nights.rainbow_engine.core.interfaces.ISprite;
 
 public class CoreScreenbuffer implements IScreenBuffer {
 
-    public boolean renderAlpha = true;
-    //public BufferedImage backgroundImage;
+    // public boolean renderAlpha = true;
+    // public BufferedImage backgroundImage;
     public BufferedImage viewImage;
     public int[] view;
     public int[] pixelsID;
     public Rectangle camera;
-    private final AffineTransform affinetransform = new AffineTransform();
-    private final FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
+    // private final AffineTransform affinetransform = new AffineTransform();
+    // private final FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
     private BasePalette palette;
 
     public CoreScreenbuffer(int width, int height) {
@@ -38,13 +38,6 @@ public class CoreScreenbuffer implements IScreenBuffer {
         //Create Cammera;
         camera = new Rectangle(0, 0, width, height);
     }
-    
-    
-    @Override
-    public void renderImage(BufferedImage image, int xPosition, int yPosition) {
-        int[] imagePixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        renderPixels(imagePixels, xPosition, yPosition, image.getWidth(), image.getHeight());
-    }
 
     @Override
     public void renderSprite(ISprite sprite, int xPosition, int yPosition) {
@@ -55,16 +48,13 @@ public class CoreScreenbuffer implements IScreenBuffer {
     public void renderRectangle(Rectangle rec) {
         int[] recPixels = rec.getPixels();
         if (recPixels != null) {
-
             renderPixels(recPixels, rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight());
         }
     }
 
     @Override
     public void renderString(Text text) {
-        Graphics graphics;
-
-        graphics = viewImage.createGraphics();
+        Graphics graphics = viewImage.createGraphics();
 
         graphics.setColor(text.getColor());
         graphics.setFont(new Font(text.getFont(), Font.PLAIN, text.getSize()));
@@ -92,10 +82,8 @@ public class CoreScreenbuffer implements IScreenBuffer {
 
     @Override
     public void setPixel(int pixel, int x, int y) {
-        if (renderAlpha) {
-            if (pixel == BasePalette.ALPHA_RGB) {
-                return;
-            }
+        if (pixel == -1) {
+            return;
         }
         if ((x >= camera.getX() && x < camera.getX() + camera.getWidth())
                 && (y >= camera.getY() && y < camera.getY() + camera.getHeight())) {
@@ -141,8 +129,8 @@ public class CoreScreenbuffer implements IScreenBuffer {
             }
         }
         graphics.drawImage(screen, 0, 0, screenWidth, screenHeight, null);
-    }   
-    
+    }
+
     @Override
     public BasePalette getPallete() {
         return palette;
@@ -153,7 +141,13 @@ public class CoreScreenbuffer implements IScreenBuffer {
         this.palette = palette;
     }
 }
-    
+
+//    
+//    @Override
+//    public void renderImage(BufferedImage image, int xPosition, int yPosition) {
+//        int[] imagePixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+//        renderPixels(imagePixels, xPosition, yPosition, image.getWidth(), image.getHeight());
+//    }
 //
 //    @Override
 //    public void renderSprite(ISprite sprite, int xPosition, int yPosition, boolean renderBackground) {
@@ -377,7 +371,6 @@ public class CoreScreenbuffer implements IScreenBuffer {
 //        return (int) (font.getStringBounds(text.getText(), frc).getWidth());
 //    }
 //}
-
 //    ---- ----- OLD SHIT ------------
 //    @Deprecated
 //    private int convertPixel(int pixel) {

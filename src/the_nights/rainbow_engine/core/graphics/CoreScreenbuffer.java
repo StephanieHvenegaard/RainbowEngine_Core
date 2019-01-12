@@ -5,93 +5,57 @@
  */
 package the_nights.rainbow_engine.core.graphics;
 
+import the_nights.rainbow_engine.core.graphics.pallates.C64Palette;
 import the_nights.rainbow_engine.core.interfaces.IScreenBuffer;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import the_nights.rainbow_engine.core.graphics.pallates.BasePalette;
 import the_nights.rainbow_engine.core.interfaces.ISprite;
 
 public class CoreScreenbuffer implements IScreenBuffer {
 
-    public boolean renderAlpha = true;
-    public BufferedImage backgroundImage;
+    // public boolean renderAlpha = true;
+    // public BufferedImage backgroundImage;
     public BufferedImage viewImage;
-    public int[] viewPixels;
-    public int[] bgPixels;
+    public int[] view;
+    public int[] pixelsID;
     public Rectangle camera;
-    private final AffineTransform affinetransform = new AffineTransform();
-    private final FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
+    // private final AffineTransform affinetransform = new AffineTransform();
+    // private final FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
+    private BasePalette palette;
 
     public CoreScreenbuffer(int width, int height) {
         //Create a BufferedImage that will represent our viewImage.
-        viewImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        backgroundImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        //Create an array for viewPixels
-        viewPixels = ((DataBufferInt) viewImage.getRaster().getDataBuffer()).getData();
-        bgPixels = ((DataBufferInt) backgroundImage.getRaster().getDataBuffer()).getData();
+        viewImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        //backgroundImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        //Create an array for view
+        view = ((DataBufferInt) viewImage.getRaster().getDataBuffer()).getData();
+        pixelsID = new int[view.length];
         //Create Cammera;
         camera = new Rectangle(0, 0, width, height);
     }
 
     @Override
-    public void renderSprite(ISprite sprite, int xPosition, int yPosition, boolean renderBackground) {
-        renderSprite(sprite, xPosition, yPosition, 1, 1, renderBackground);
+    public void renderSprite(ISprite sprite, int xPosition, int yPosition) {
+        renderPixels(sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight());
     }
 
     @Override
-    public void renderSprite(ISprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean renderBackground) {
-        sprite.getPixels();
-        if (renderBackground) {
-            renderBackgroundPixels( sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight(), xZoom, yZoom);
-        } else {
-            renderPixels( sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight(), xZoom, yZoom);
-        }
-    }
-    
-    @Override
-    public void renderImage(BufferedImage image, int xPosition, int yPosition, boolean renderBackground) {
-        renderImage(image, xPosition, yPosition, 1, 1, renderBackground);
-    }
-
-    @Override
-    public void renderImage(BufferedImage image, int xPosition, int yPosition, int xZoom, int yZoom, boolean renderBackground) {
-        int[] imagePixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        if (renderBackground) {
-            renderBackgroundPixels(imagePixels, xPosition, yPosition, image.getWidth(), image.getHeight(), xZoom, yZoom);
-        } else {
-            renderPixels(imagePixels, xPosition, yPosition, image.getWidth(), image.getHeight(), xZoom, yZoom);
-        }
-    }
-
-    @Override
-    public void renderRectangle(Rectangle rec, boolean renderBackground) {
-        renderRectangle(rec, 1, 1, renderBackground);
-    }
-
-    @Override
-    public void renderRectangle(Rectangle rec, int xZoom, int yZoom, boolean renderBackground) {
+    public void renderRectangle(Rectangle rec) {
         int[] recPixels = rec.getPixels();
         if (recPixels != null) {
-            if (renderBackground) {
-                renderBackgroundPixels(recPixels, rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight(), xZoom, yZoom);
-            } else {
-                renderPixels(recPixels, rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight(), xZoom, yZoom);
-            }
+            renderPixels(recPixels, rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight());
         }
     }
 
     @Override
-    public void renderString(Text text, boolean renderBackground) {
-        Graphics graphics;
-        if (renderBackground) {
-            graphics = this.backgroundImage.getGraphics();
-        } else {
-            graphics = viewImage.createGraphics();
-        }
+    public void renderString(Text text) {
+        Graphics graphics = viewImage.createGraphics();
+
         graphics.setColor(text.getColor());
         graphics.setFont(new Font(text.getFont(), Font.PLAIN, text.getSize()));
         graphics.drawString(text.getText(), text.getxPosition(), text.getyPosition());
@@ -99,58 +63,40 @@ public class CoreScreenbuffer implements IScreenBuffer {
     }
 
     @Override
-    public void renderString(String s, String fontName, int fontSize, int xPosition, int yPosition, boolean renderBackground) {
-        Text t = new Text(s, fontSize, fontName, xPosition, yPosition);
-        renderString(t, renderBackground);
+    public void clear() {
+        for (int i = 0; i < view.length; i++) {
+            view[i] = 0;
+        }
     }
 
     @Override
     public void renderPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight) {
-        renderPixels(renderPixels, xPosition, yPosition, renderWidth, renderHeight, 1, 1);
-    }
-
-    @Override
-    public void renderPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight, int xZoom, int yZoom) {
         for (int y = 0; y < renderHeight; y++) {
             for (int x = 0; x < renderWidth; x++) {
-                for (int xz = 0; xz < xZoom; xz++) {
-                    for (int yz = 0; yz < yZoom; yz++) {
-                        int pixelID = x + (y * renderWidth);
-                        int pixel = renderPixels[pixelID];
-                        int xi = ((x * xZoom) + xPosition + xz);
-                        int yi = ((y * yZoom) + yPosition + yz);
-                        setPixel(pixel, xi, yi);
-                    }
-                }
+                int pixelID = x + (y * renderWidth);
+                int pixel = renderPixels[pixelID];
+                setPixel(pixel, x, y);
             }
         }
     }
 
     @Override
     public void setPixel(int pixel, int x, int y) {
-        if (renderAlpha) {
-            if (//pixel == ColorPallete.ALPHA_ARGB ||
-                    pixel == ColorPallete.ALPHA_RGB) {
-                return;
-            }
+        if (pixel == -1) {
+            return;
         }
         if ((x >= camera.getX() && x < camera.getX() + camera.getWidth())
                 && (y >= camera.getY() && y < camera.getY() + camera.getHeight())) {
             int pixelIndex = (x - camera.getX()) + (y - camera.getY()) * viewImage.getWidth();
-            if (pixelIndex < viewPixels.length) {
-                viewPixels[pixelIndex] = pixel;
+            if (pixelIndex < view.length) {
+                view[pixelIndex] = pixel;
             }
         }
     }
 
     @Override
-    public void DrawView(Graphics graphics) {
-        graphics.drawImage(viewImage, 0, 0, viewImage.getWidth(), viewImage.getHeight(), null);
-    }
-
-    @Override
     public void DrawView(Graphics graphics, int screenWidth, int screenHeight) {
-        //System.out.println("W : "+screenWidth +" H "+ screenHeight);
+        System.out.println("W : " + screenWidth + " H " + screenHeight);
 
         int zoomY = (screenHeight / viewImage.getHeight());
         int zoomX = (screenWidth / viewImage.getWidth());
@@ -173,94 +119,258 @@ public class CoreScreenbuffer implements IScreenBuffer {
         for (int y = 0; y < viewImage.getHeight(); y++) {
             for (int x = 0; x < viewImage.getWidth(); x++) {
                 for (int yz = 0; yz < zoomFactor; yz++) {
-                        for (int xz = 0; xz < zoomFactor; xz++) {
-                            int pixel = viewPixels[x + (y * viewImage.getWidth())];
-                            int xi = ((x * zoomFactor) + xPosition + xz);
-                            int yi = ((y * zoomFactor) + yPosition + yz);
-                            screenPixels[xi + (yi * screenWidth)] = pixel;
-                        }
+                    for (int xz = 0; xz < zoomFactor; xz++) {
+                        int pixel = view[x + (y * viewImage.getWidth())];
+                        int xi = ((x * zoomFactor) + xPosition + xz);
+                        int yi = ((y * zoomFactor) + yPosition + yz);
+                        screenPixels[xi + (yi * screenWidth)] = pixel;
+                    }
                 }
             }
         }
         graphics.drawImage(screen, 0, 0, screenWidth, screenHeight, null);
     }
+
     @Override
-    public void renderBackgroundPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight, int xZoom, int yZoom) {
-        for (int y = 0; y < renderHeight; y++) {
-            for (int x = 0; x < renderWidth; x++) {
-                for (int xz = 0; xz < xZoom; xz++) {
-                    for (int yz = 0; yz < yZoom; yz++) {
-                        int pixelID = x + (y * renderWidth);
-                        int pixel = renderPixels[pixelID];
-                        int xi = ((x * xZoom) + xPosition + xz);
-                        int yi = ((y * yZoom) + yPosition + yz);
-                        setBackgroundPixel(pixel, xi, yi);
-                    }
-                }
-            }
-        }
-    }
-    @Override
-    public void setBackgroundPixel(int pixel, int x, int y) {
-        if (pixel != ColorPallete.ALPHA_RGB) {
-            int pixelIndex = x + (y * backgroundImage.getWidth());
-            if (pixelIndex < bgPixels.length) {
-                bgPixels[pixelIndex] = pixel;
-            }
-        }     
-    }
-    @Override
-    public void setBackgroundSize(int width, int heigth) {
-        backgroundImage = new BufferedImage(width, heigth, BufferedImage.TYPE_INT_ARGB);
-        bgPixels = ((DataBufferInt) backgroundImage.getRaster().getDataBuffer()).getData();
+    public BasePalette getPallete() {
+        return palette;
     }
 
     @Override
-    public void setRenderAlpha(boolean renderAlpha) {
-        this.renderAlpha = renderAlpha;
-    }
-
-    @Override
-    public boolean isRenderAlpha() {
-        return renderAlpha;
-    }
-
-    @Override
-    public Rectangle getCamara() {
-        return camera;
-    }
-
-    @Override
-    public BufferedImage getView() {
-        return viewImage;
-    }
-
-    @Override
-    public int[] getViewPixels() {
-        return viewPixels;
-    }
-
-    @Override
-    public void clear(boolean renderbackground) {
-        if (renderbackground) {
-            renderImage(backgroundImage, 0, 0, false);
-        } else {
-            for (int i = 0; i < viewPixels.length; i++) {
-                viewPixels[i] = 0;
-            }
-        }
-    }
-    @Override
-    public BufferedImage getBufferImage() {
-        return viewImage;
-    }
-    @Override
-    public int calculateTextSize(Text text) {
-        Font font = new Font(text.getFont(), Font.PLAIN, text.getSize());
-        return (int) (font.getStringBounds(text.getText(), frc).getWidth());
+    public void setPallete(BasePalette palette) {
+        this.palette = palette;
     }
 }
 
+//    
+//    @Override
+//    public void renderImage(BufferedImage image, int xPosition, int yPosition) {
+//        int[] imagePixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+//        renderPixels(imagePixels, xPosition, yPosition, image.getWidth(), image.getHeight());
+//    }
+//
+//    @Override
+//    public void renderSprite(ISprite sprite, int xPosition, int yPosition, boolean renderBackground) {
+//        renderSprite(sprite, xPosition, yPosition, 1, 1, renderBackground);
+//    }
+//
+//    @Override
+//    public void renderSprite(ISprite sprite, int xPosition, int yPosition, int xZoom, int yZoom, boolean renderBackground) {
+//        sprite.getPixels();
+//        if (renderBackground) {
+//            renderBackgroundPixels( sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight(), xZoom, yZoom);
+//        } else {
+//            
+//        }
+//    }
+//    
+//    @Override
+//    public void renderImage(BufferedImage image, int xPosition, int yPosition, boolean renderBackground) {
+//        renderImage(image, xPosition, yPosition, 1, 1, renderBackground);
+//    }
+//
+//    @Override
+//    public void renderImage(BufferedImage image, int xPosition, int yPosition, int xZoom, int yZoom, boolean renderBackground) {
+//        int[] imagePixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
+//        if (renderBackground) {
+//            renderBackgroundPixels(imagePixels, xPosition, yPosition, image.getWidth(), image.getHeight(), xZoom, yZoom);
+//        } else {
+//            renderPixels(imagePixels, xPosition, yPosition, image.getWidth(), image.getHeight(), xZoom, yZoom);
+//        }
+//    }
+//
+//    @Override
+//    public void renderRectangle(Rectangle rec, boolean renderBackground) {
+//        renderRectangle(rec, 1, 1, renderBackground);
+//    }
+//
+//    @Override
+//    public void renderRectangle(Rectangle rec, int xZoom, int yZoom, boolean renderBackground) {
+//        int[] recPixels = rec.getPixels();
+//        if (recPixels != null) {
+//            if (renderBackground) {
+//                renderBackgroundPixels(recPixels, rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight(), xZoom, yZoom);
+//            } else {
+//                renderPixels(recPixels, rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight(), xZoom, yZoom);
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void renderString(Text text, boolean renderBackground) {
+//        Graphics graphics;
+//        if (renderBackground) {
+//            graphics = this.backgroundImage.getGraphics();
+//        } else {
+//            graphics = viewImage.createGraphics();
+//        }
+//        graphics.setColor(text.getColor());
+//        graphics.setFont(new Font(text.getFont(), Font.PLAIN, text.getSize()));
+//        graphics.drawString(text.getText(), text.getxPosition(), text.getyPosition());
+//        graphics.dispose();
+//    }
+//
+//    @Override
+//    public void renderString(String s, String fontName, int fontSize, int xPosition, int yPosition, boolean renderBackground) {
+//        Text t = new Text(s, fontSize, fontName, xPosition, yPosition);
+//        renderString(t, renderBackground);
+//    }
+//
+//    @Override
+//    public void renderPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight) {
+//        renderPixels(renderPixels, xPosition, yPosition, renderWidth, renderHeight, 1, 1);
+//    }
+//
+//    @Override
+//    public void renderPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight, int xZoom, int yZoom) {
+//        for (int y = 0; y < renderHeight; y++) {
+//            for (int x = 0; x < renderWidth; x++) {
+//                for (int xz = 0; xz < xZoom; xz++) {
+//                    for (int yz = 0; yz < yZoom; yz++) {
+//                        int pixelID = x + (y * renderWidth);
+//                        int pixel = renderPixels[pixelID];
+//                        int xi = ((x * xZoom) + xPosition + xz);
+//                        int yi = ((y * yZoom) + yPosition + yz);
+//                        setPixel(pixel, xi, yi);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void setPixel(int pixel, int x, int y) {
+//        if (renderAlpha) {
+//            if (pixel == BasePalette.ALPHA_RGB) {
+//                return;
+//            }
+//        }
+//        if ((x >= camera.getX() && x < camera.getX() + camera.getWidth())
+//                && (y >= camera.getY() && y < camera.getY() + camera.getHeight())) {
+//            int pixelIndex = (x - camera.getX()) + (y - camera.getY()) * viewImage.getWidth();
+//            if (pixelIndex < view.length) {
+//                view[pixelIndex] = pixel;
+//            }
+//        }
+//    }
+//
+//    @Override
+//    public void DrawView(Graphics graphics) {
+//        graphics.drawImage(viewImage, 0, 0, viewImage.getWidth(), viewImage.getHeight(), null);
+//    }
+//
+//    @Override
+//    public void DrawView(Graphics graphics, int screenWidth, int screenHeight) {
+//        //System.out.println("W : "+screenWidth +" H "+ screenHeight);
+//
+//        int zoomY = (screenHeight / viewImage.getHeight());
+//        int zoomX = (screenWidth / viewImage.getWidth());
+//        //System.out.println("Zoom X : "+ zoomX + " Y : "+zoomY);        
+//
+//        int zoomFactor = 1;
+//        if (zoomX <= zoomY) {
+//            zoomFactor = zoomX;
+//        } else {
+//            zoomFactor = zoomY;
+//        }
+//
+//        //System.out.println("Zoomfactor " +zoomFactor);  
+//        int xPosition = (screenWidth - (viewImage.getWidth() * zoomFactor)) / 2;
+//        int yPosition = (screenHeight - (viewImage.getHeight() * zoomFactor)) / 2;
+//
+//        //System.out.println("xpos : "+ xPosition + "ypos : "+ yPosition);
+//        BufferedImage screen = new BufferedImage(screenWidth, screenHeight, BufferedImage.TYPE_INT_RGB);
+//        int[] screenPixels = ((DataBufferInt) screen.getRaster().getDataBuffer()).getData();
+//        for (int y = 0; y < viewImage.getHeight(); y++) {
+//            for (int x = 0; x < viewImage.getWidth(); x++) {
+//                for (int yz = 0; yz < zoomFactor; yz++) {
+//                        for (int xz = 0; xz < zoomFactor; xz++) {
+//                            int pixel = view[x + (y * viewImage.getWidth())];
+//                            int xi = ((x * zoomFactor) + xPosition + xz);
+//                            int yi = ((y * zoomFactor) + yPosition + yz);
+//                            screenPixels[xi + (yi * screenWidth)] = pixel;
+//                        }
+//                }
+//            }
+//        }
+//        graphics.drawImage(screen, 0, 0, screenWidth, screenHeight, null);
+//    }
+//    @Override
+//    public void renderBackgroundPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight, int xZoom, int yZoom) {
+//        for (int y = 0; y < renderHeight; y++) {
+//            for (int x = 0; x < renderWidth; x++) {
+//                for (int xz = 0; xz < xZoom; xz++) {
+//                    for (int yz = 0; yz < yZoom; yz++) {
+//                        int pixelID = x + (y * renderWidth);
+//                        int pixel = renderPixels[pixelID];
+//                        int xi = ((x * xZoom) + xPosition + xz);
+//                        int yi = ((y * yZoom) + yPosition + yz);
+//                        setBackgroundPixel(pixel, xi, yi);
+//                    }
+//                }
+//            }
+//        }
+//    }
+//    @Override
+//    public void setBackgroundPixel(int pixel, int x, int y) {
+//        if (pixel != C64Palette.ALPHA_RGB) {
+//            int pixelIndex = x + (y * backgroundImage.getWidth());
+//            if (pixelIndex < bgPixels.length) {
+//                bgPixels[pixelIndex] = pixel;
+//            }
+//        }     
+//    }
+//    @Override
+//    public void setBackgroundSize(int width, int heigth) {
+//        backgroundImage = new BufferedImage(width, heigth, BufferedImage.TYPE_INT_ARGB);
+//        bgPixels = ((DataBufferInt) backgroundImage.getRaster().getDataBuffer()).getData();
+//    }
+//
+//    @Override
+//    public void setRenderAlpha(boolean renderAlpha) {
+//        this.renderAlpha = renderAlpha;
+//    }
+//
+//    @Override
+//    public boolean isRenderAlpha() {
+//        return renderAlpha;
+//    }
+//
+//    @Override
+//    public Rectangle getCamara() {
+//        return camera;
+//    }
+//
+//    @Override
+//    public BufferedImage getView() {
+//        return viewImage;
+//    }
+//
+//    @Override
+//    public int[] getViewPixels() {
+//        return view;
+//    }
+//
+//    @Override
+//    public void clear(boolean renderbackground) {
+//        if (renderbackground) {
+//            renderImage(backgroundImage, 0, 0, false);
+//        } else {
+//            for (int i = 0; i < view.length; i++) {
+//                view[i] = 0;
+//            }
+//        }
+//    }
+//    @Override
+//    public BufferedImage getBufferImage() {
+//        return viewImage;
+//    }
+//    @Override
+//    public int calculateTextSize(Text text) {
+//        Font font = new Font(text.getFont(), Font.PLAIN, text.getSize());
+//        return (int) (font.getStringBounds(text.getText(), frc).getWidth());
+//    }
+//}
 //    ---- ----- OLD SHIT ------------
 //    @Deprecated
 //    private int convertPixel(int pixel) {

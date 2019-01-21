@@ -1,49 +1,44 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * MIT License
+ * 
+ * Copyright (c) 2019 Stephanie Hvenegaard
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package the_nights.rainbow_engine.core.graphics;
 
-import the_nights.rainbow_engine.core.graphics.pallates.C64Palette;
 import the_nights.rainbow_engine.core.interfaces.IScreenBuffer;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import the_nights.rainbow_engine.core.graphics.pallates.BasePalette;
 import the_nights.rainbow_engine.core.interfaces.ISprite;
 
 public class CoreScreenbuffer implements IScreenBuffer {
-
-    // public boolean renderAlpha = true;
-    // public BufferedImage backgroundImage;
-    public BufferedImage viewImage;
-    public int[] view;
-    public int[] pixelsID;
-    public Rectangle camera;
-    // private final AffineTransform affinetransform = new AffineTransform();
-    // private final FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
-    private BasePalette palette;
-
+    protected BufferedImage viewImage;
+    protected int[] view;
+    protected BasePalette palette;
     public CoreScreenbuffer(int width, int height) {
-        //Create a BufferedImage that will represent our viewImage.
         viewImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        //backgroundImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        //Create an array for view
         view = ((DataBufferInt) viewImage.getRaster().getDataBuffer()).getData();
-        pixelsID = new int[view.length];
-        //Create Cammera;
-        camera = new Rectangle(0, 0, width, height);
     }
-
-    @Override
-    public void renderSprite(ISprite sprite, int xPosition, int yPosition) {
-        renderPixels(sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight());
-    }
-
     @Override
     public void renderRectangle(Rectangle rec) {
         int[] recPixels = rec.getPixels();
@@ -51,52 +46,48 @@ public class CoreScreenbuffer implements IScreenBuffer {
             renderPixels(recPixels, rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight());
         }
     }
-
     @Override
     public void renderString(Text text) {
         Graphics graphics = viewImage.createGraphics();
-
         graphics.setColor(text.getColor());
         graphics.setFont(new Font(text.getFont(), Font.PLAIN, text.getSize()));
         graphics.drawString(text.getText(), text.getxPosition(), text.getyPosition());
         graphics.dispose();
     }
-
     @Override
     public void clear() {
         for (int i = 0; i < view.length; i++) {
             view[i] = 0;
         }
     }
-
+    @Override
+    public void renderSprite(ISprite sprite, int xPosition, int yPosition) {
+        renderPixels(sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight());
+    }
     @Override
     public void renderPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight) {
         for (int y = 0; y < renderHeight; y++) {
             for (int x = 0; x < renderWidth; x++) {
                 int pixelID = x + (y * renderWidth);
                 int pixel = renderPixels[pixelID];
-                setPixel(pixel, x, y);
+                setPixel(pixel, x+xPosition, y+yPosition);
             }
         }
     }
-
     @Override
     public void setPixel(int pixel, int x, int y) {
-        if (pixel == -1) {
+        if (pixel == BasePalette.ALPHA_RGB) {
             return;
         }
-        if ((x >= camera.getX() && x < camera.getX() + camera.getWidth())
-                && (y >= camera.getY() && y < camera.getY() + camera.getHeight())) {
-            int pixelIndex = (x - camera.getX()) + (y - camera.getY()) * viewImage.getWidth();
-            if (pixelIndex < view.length) {
-                view[pixelIndex] = pixel;
+            int pixelID = x + (y * viewImage.getWidth());
+            if (pixelID < view.length) {
+                view[pixelID] = pixel;
             }
-        }
     }
-
+    
     @Override
     public void DrawView(Graphics graphics, int screenWidth, int screenHeight) {
-        System.out.println("W : " + screenWidth + " H " + screenHeight);
+        //System.out.println("W : " + screenWidth + " H " + screenHeight);
 
         int zoomY = (screenHeight / viewImage.getHeight());
         int zoomX = (screenWidth / viewImage.getWidth());

@@ -29,9 +29,7 @@ import the_nights.rainbow_engine.core.Engine;
  *
  * @author Stephanie
  */
-public interface ICutscreen {
-    public void render(IScreenBuffer screenBuffer, int xZoom,int yZoom);
-    public void update(Engine engine);
+public interface ICutscreen extends IRender, IUpdate {
     public int getCurrentFrame();
     public void setCurrentFrame();
     public boolean isOver();

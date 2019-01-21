@@ -32,20 +32,12 @@ import the_nights.rainbow_engine.core.graphics.pallates.BasePalette;
 import the_nights.rainbow_engine.core.interfaces.ISprite;
 
 public class CoreScreenbuffer implements IScreenBuffer {
-    public BufferedImage viewImage;
-    public int[] view;
-    //public int[] pixelsID;
-    //public Rectangle camera;
-    private BasePalette palette;
+    protected BufferedImage viewImage;
+    protected int[] view;
+    protected BasePalette palette;
     public CoreScreenbuffer(int width, int height) {
-        //Create a BufferedImage that will represent our viewImage.
         viewImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        //backgroundImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        //Create an array for view
         view = ((DataBufferInt) viewImage.getRaster().getDataBuffer()).getData();
-        //pixelsID = new int[view.length];
-        //Create Cammera;
-        //camera = new Rectangle(0, 0, width, height);
     }
     @Override
     public void renderRectangle(Rectangle rec) {
@@ -57,7 +49,6 @@ public class CoreScreenbuffer implements IScreenBuffer {
     @Override
     public void renderString(Text text) {
         Graphics graphics = viewImage.createGraphics();
-
         graphics.setColor(text.getColor());
         graphics.setFont(new Font(text.getFont(), Font.PLAIN, text.getSize()));
         graphics.drawString(text.getText(), text.getxPosition(), text.getyPosition());
@@ -88,15 +79,13 @@ public class CoreScreenbuffer implements IScreenBuffer {
         if (pixel == BasePalette.ALPHA_RGB) {
             return;
         }
-//        if ((x >= camera.getX() && x < camera.getX() + camera.getWidth())
-//                && (y >= camera.getY() && y < camera.getY() + camera.getHeight())) {
-//            int pixelID = (x - camera.getX()) + (y - camera.getY()) * viewImage.getWidth();
             int pixelID = x + (y * viewImage.getWidth());
             if (pixelID < view.length) {
                 view[pixelID] = pixel;
             }
-//        }
+
     }
+    
     @Override
     public void DrawView(Graphics graphics, int screenWidth, int screenHeight) {
         //System.out.println("W : " + screenWidth + " H " + screenHeight);

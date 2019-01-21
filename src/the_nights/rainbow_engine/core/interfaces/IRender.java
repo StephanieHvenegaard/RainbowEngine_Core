@@ -21,12 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package the_nights.rainbow_engine.core.graphics;
-
+package the_nights.rainbow_engine.core.interfaces;
+import the_nights.rainbow_engine.core.interfaces.ICoreObject;
 /**
  *
  * @author Stephanie
  */
-public enum ScanLines {
-    
+public interface IRender extends ICoreObject
+{    
+       public void render(IScreenBuffer screenBuffer);
 }

@@ -21,56 +21,24 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package the_nights.rainbow_engine.core.listner;
+package the_nights.rainbow_engine.core.interfaces;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import the_nights.rainbow_engine.core.Engine;
+
 /**
  *
  * @author Stephanie
  */
-public class MouseEventListner implements MouseListener,MouseMotionListener{
-    private final Engine engine;
-    public MouseEventListner(Engine engine)
-    {
-        this.engine = engine;
-    }
-    @Override        
-    public void mouseClicked(MouseEvent e) {
-        //System.out.println("Mouse was clicked");
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        //System.out.println("Mouse was Pressed");
-        //if(e.getButton() == MouseEvent.BUTTON1)
-            //engine.leftClick(e.getX(),e.getY());
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
-        //System.out.println("Mouse was Released");
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-        //System.out.println("Mouse was Entered");
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-        //System.out.println("Mouse was Exited");
-    }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-    
-    }
+public interface IGame {
+    public void update(Engine engine);
+    public void render(IScreenBuffer screenbuffer);    
+    public void loadAssets();
+    public String getName();
+    public String getVersionNumber();
+    public void startGame(Engine engine);
+    public void resetGame(Engine engine);
+    public void pauseGame(Engine engine);
+    public void esc(Engine engine);
+    public void quitGame(Engine engine);
+    public int countGameObjects();
 }

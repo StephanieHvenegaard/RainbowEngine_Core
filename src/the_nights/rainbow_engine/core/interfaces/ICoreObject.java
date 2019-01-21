@@ -21,12 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package the_nights.rainbow_engine.core.graphics;
+package the_nights.rainbow_engine.core.interfaces;
 
 /**
  *
  * @author Stephanie
  */
-public enum ScanLines {
+public interface ICoreObject {
     
 }

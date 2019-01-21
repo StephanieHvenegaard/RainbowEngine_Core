@@ -23,10 +23,38 @@
  */
 package the_nights.rainbow_engine.core.graphics;
 
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import the_nights.rainbow_engine.core.graphics.pallates.BasePalette;
+import the_nights.rainbow_engine.core.interfaces.IScreenBuffer;
+import the_nights.rainbow_engine.core.interfaces.ISprite;
+
 /**
  *
  * @author Stephanie
  */
-public enum ScanLines {
-    
+public class CorePalleteScreenbuffer extends CoreScreenbuffer {
+
+    public BufferedImage viewImage;
+    public int[] view;
+    //public int[] pixelsID;
+    //public Rectangle camera;
+    private BasePalette palette;
+
+    public CorePalleteScreenbuffer(int width, int height) {
+        super(width, height);
+    }
+
+    @Override
+    public void setPixel(int pixel, int x, int y) {
+        if (pixel == BasePalette.ALPHA_RGB) {
+            return;
+        }
+        int pixelID = x + (y * viewImage.getWidth());
+        if (pixelID < view.length) {
+            view[pixelID] = pixel;
+        }
+    }
 }

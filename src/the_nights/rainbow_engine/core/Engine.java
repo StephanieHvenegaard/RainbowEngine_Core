@@ -1,33 +1,50 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * MIT License
+ * 
+ * Copyright (c) 2019 Stephanie Hvenegaard
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package the_nights.rainbow_engine.core;
 
+import the_nights.rainbow_engine.core.interfaces.IGame;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import the_nights.rainbow_engine.core.graphics.CoreScreenbuffer;
-import the_nights.rainbow_engine.core.graphics.IScreenBuffer;
+import the_nights.rainbow_engine.core.interfaces.IScreenBuffer;
 import the_nights.rainbow_engine.core.graphics.Rectangle;
 import the_nights.rainbow_engine.core.graphics.SplashScreen;
+import the_nights.rainbow_engine.core.graphics.Text;
 import the_nights.rainbow_engine.core.listner.KeyboardListner;
 import the_nights.rainbow_engine.core.listner.MouseEventListner;
 import the_nights.rainbow_engine.core.logging.RELogger;
 import the_nights.rainbow_engine.core.settings.EngineSettings;
-import the_nigths.rson.RSONObject;
 
 public class Engine extends JFrame implements Runnable {
 
@@ -64,15 +81,23 @@ public class Engine extends JFrame implements Runnable {
     private Rectangle debugRec;
    
     public Engine() {
+        
+        try {
+            Image img = ImageIO.read(getClass().getResourceAsStream("/icon.png"));
+            this.setIconImage(img);
+        } catch (IOException ex) {
+            Logger.getLogger(Engine.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         RELogger.writelog("Showing splashscreen", this);
         showSplashScreen();
-        RELogger.writelog("Loading settings", this); 
         
+        RELogger.writelog("Loading settings", this);         
         RELogger.writelog("Initializing Engine", this);
         RELogger.writelog("Borderless : " + engineSettings.borderless, this);
         RELogger.writelog("fullscreen : " + engineSettings.fullscreen, this);
-        RELogger.writelog("Resolution : " + engineSettings.resolution.res, this);
-
+        RELogger.writelog("Resolution : " + engineSettings.resolution.getName(), this);
+        
         //debug rectangle.
         debugRec = new Rectangle(0, 0, 140, 50);
         debugRec.generateGrafics(0);
@@ -135,11 +160,11 @@ public class Engine extends JFrame implements Runnable {
                 super.paint(graphics);
                 game.render(screenBuffer);
                 if (_showDebugInfo) {
-                    screenBuffer.renderRectangle(debugRec, false);
-                    screenBuffer.renderString(String.format("fps  : %7d", fps), DEFAULT_FONT, 12, 5, 11, false);
-                    screenBuffer.renderString(String.format("upd  : %7d ns", updateTime), DEFAULT_FONT, 12, 5, 11 * 2, false);
-                    screenBuffer.renderString(String.format("rndr : %7d ns", renderTime), DEFAULT_FONT, 12, 5, 11 * 3, false);
-                    screenBuffer.renderString(String.format("gobj : %7d's", game.countGameObjects()), DEFAULT_FONT, 12, 5, 11 * 4, false);
+                    screenBuffer.renderRectangle(debugRec);
+                    screenBuffer.renderString(new Text(String.format("fps  : %7d", fps), DEFAULT_FONT, 12, 5, 11));
+                    screenBuffer.renderString(new Text(String.format("upd  : %7d ns", updateTime), DEFAULT_FONT, 12, 5, 11 * 2));
+                    screenBuffer.renderString(new Text(String.format("rndr : %7d ns", renderTime), DEFAULT_FONT, 12, 5, 11 * 3));
+                    screenBuffer.renderString(new Text(String.format("gobj : %7d's", game.countGameObjects()), DEFAULT_FONT, 12, 5, 11 * 4));
                 }
                 screenBuffer.DrawView(graphics, canvas.getWidth(), canvas.getHeight());
                 //Clean up;
@@ -205,29 +230,6 @@ public class Engine extends JFrame implements Runnable {
         Thread engineT = new Thread(this);
         engineT.start();
     }
-
-    public static BufferedImage loadImage(String path) {
-        try {
-            BufferedImage loaded = ImageIO.read(loadFile(path));
-            BufferedImage formatted = new BufferedImage(loaded.getWidth(), loaded.getHeight(), BufferedImage.TYPE_INT_RGB);
-            formatted.getGraphics().drawImage(loaded, 0, 0, null);
-            return formatted;
-        } catch (IOException e) {
-            RELogger.writelog(e.getMessage(), "Engine");
-            return null;
-        }
-    }
-
-    public static File loadFile(String path) {
-        File loaded = null;
-        try {
-            loaded = new File(path);
-        } catch (Exception e) {
-            RELogger.writelog(e.getMessage(), "Engine");
-        }
-        return loaded;
-    }
-
     public void shutdownEngine() {
         dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }
@@ -294,6 +296,7 @@ public class Engine extends JFrame implements Runnable {
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.screenBuffer = new CoreScreenbuffer(screenWidth, screenHeight);
+        
     }
 
     public void setScreenBuffer(CoreScreenbuffer screenBuffer) {
@@ -312,6 +315,7 @@ public class Engine extends JFrame implements Runnable {
 //    }
     public void setGame(IGame game) {
         RELogger.writelog("setting game : " + game.getName() + " " + game.getVersionNumber(), this);
+        this.setTitle("Rainbow Engine - "+game.getName() +" "+ game.getVersionNumber());
         this.game = game;
     }
 }

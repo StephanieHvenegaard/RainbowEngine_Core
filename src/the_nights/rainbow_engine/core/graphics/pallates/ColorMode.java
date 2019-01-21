@@ -3,13 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package the_nights.rainbow_engine.core;
+package the_nights.rainbow_engine.core.graphics.pallates;
 
 /**
  *
  * @author Stephanie
  */
-public interface IMoveable {
-    public void moveX(int x);
-    public void moveY(int y);
+public enum ColorMode {
+    MONOCROME,
+    EGA,
+    COLOR_16,    
+    COLOR_32,
+    COLOR_64,    
+    COLOR_256
 }

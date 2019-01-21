@@ -70,7 +70,7 @@ public class CoreScreenbuffer implements IScreenBuffer {
             for (int x = 0; x < renderWidth; x++) {
                 int pixelID = x + (y * renderWidth);
                 int pixel = renderPixels[pixelID];
-                setPixel(pixel, x, y);
+                setPixel(pixel, x+xPosition, y+yPosition);
             }
         }
     }
@@ -83,7 +83,6 @@ public class CoreScreenbuffer implements IScreenBuffer {
             if (pixelID < view.length) {
                 view[pixelID] = pixel;
             }
-
     }
     
     @Override

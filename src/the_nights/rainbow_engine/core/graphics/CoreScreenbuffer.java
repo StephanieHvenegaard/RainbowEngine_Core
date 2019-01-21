@@ -23,45 +23,30 @@
  */
 package the_nights.rainbow_engine.core.graphics;
 
-import the_nights.rainbow_engine.core.graphics.pallates.C64Palette;
 import the_nights.rainbow_engine.core.interfaces.IScreenBuffer;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import the_nights.rainbow_engine.core.graphics.pallates.BasePalette;
 import the_nights.rainbow_engine.core.interfaces.ISprite;
 
 public class CoreScreenbuffer implements IScreenBuffer {
-
-    // public boolean renderAlpha = true;
-    // public BufferedImage backgroundImage;
     public BufferedImage viewImage;
     public int[] view;
-    public int[] pixelsID;
-    public Rectangle camera;
-    // private final AffineTransform affinetransform = new AffineTransform();
-    // private final FontRenderContext frc = new FontRenderContext(affinetransform, true, true);
+    //public int[] pixelsID;
+    //public Rectangle camera;
     private BasePalette palette;
-
     public CoreScreenbuffer(int width, int height) {
         //Create a BufferedImage that will represent our viewImage.
         viewImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         //backgroundImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         //Create an array for view
         view = ((DataBufferInt) viewImage.getRaster().getDataBuffer()).getData();
-        pixelsID = new int[view.length];
+        //pixelsID = new int[view.length];
         //Create Cammera;
-        camera = new Rectangle(0, 0, width, height);
+        //camera = new Rectangle(0, 0, width, height);
     }
-
-    @Override
-    public void renderSprite(ISprite sprite, int xPosition, int yPosition) {
-        renderPixels(sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight());
-    }
-
     @Override
     public void renderRectangle(Rectangle rec) {
         int[] recPixels = rec.getPixels();
@@ -69,7 +54,6 @@ public class CoreScreenbuffer implements IScreenBuffer {
             renderPixels(recPixels, rec.getX(), rec.getY(), rec.getWidth(), rec.getHeight());
         }
     }
-
     @Override
     public void renderString(Text text) {
         Graphics graphics = viewImage.createGraphics();
@@ -79,14 +63,16 @@ public class CoreScreenbuffer implements IScreenBuffer {
         graphics.drawString(text.getText(), text.getxPosition(), text.getyPosition());
         graphics.dispose();
     }
-
     @Override
     public void clear() {
         for (int i = 0; i < view.length; i++) {
             view[i] = 0;
         }
     }
-
+    @Override
+    public void renderSprite(ISprite sprite, int xPosition, int yPosition) {
+        renderPixels(sprite.getPixels(), xPosition, yPosition, sprite.getWidth(), sprite.getHeight());
+    }
     @Override
     public void renderPixels(int[] renderPixels, int xPosition, int yPosition, int renderWidth, int renderHeight) {
         for (int y = 0; y < renderHeight; y++) {
@@ -97,24 +83,23 @@ public class CoreScreenbuffer implements IScreenBuffer {
             }
         }
     }
-
     @Override
     public void setPixel(int pixel, int x, int y) {
-        if (pixel == -1) {
+        if (pixel == BasePalette.ALPHA_RGB) {
             return;
         }
-        if ((x >= camera.getX() && x < camera.getX() + camera.getWidth())
-                && (y >= camera.getY() && y < camera.getY() + camera.getHeight())) {
-            int pixelIndex = (x - camera.getX()) + (y - camera.getY()) * viewImage.getWidth();
-            if (pixelIndex < view.length) {
-                view[pixelIndex] = pixel;
+//        if ((x >= camera.getX() && x < camera.getX() + camera.getWidth())
+//                && (y >= camera.getY() && y < camera.getY() + camera.getHeight())) {
+//            int pixelID = (x - camera.getX()) + (y - camera.getY()) * viewImage.getWidth();
+            int pixelID = x + (y * viewImage.getWidth());
+            if (pixelID < view.length) {
+                view[pixelID] = pixel;
             }
-        }
+//        }
     }
-
     @Override
     public void DrawView(Graphics graphics, int screenWidth, int screenHeight) {
-        System.out.println("W : " + screenWidth + " H " + screenHeight);
+        //System.out.println("W : " + screenWidth + " H " + screenHeight);
 
         int zoomY = (screenHeight / viewImage.getHeight());
         int zoomX = (screenWidth / viewImage.getWidth());
